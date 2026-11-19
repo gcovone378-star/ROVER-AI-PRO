@@ -1,0 +1,10 @@
+R.O.V.E.R. AI PRO Mobile — Covone Corporation
+
+1. Pubblica tutti i file e la cartella icons su un hosting statico HTTPS gratuito (es. GitHub Pages o Cloudflare Pages).
+2. Apri il link HTTPS pubblicato in Safari su iPhone 16.
+3. Tocca Condividi > Aggiungi alla schermata Home > Aggiungi.
+4. Apri l’icona R.O.V.E.R. dalla schermata Home.
+
+Non basta aprire index.html come file locale: fotocamera e service worker richiedono HTTPS.
+Questa versione NON contiene ancora YOLO, Gemma 3 o ascolto continuo Ehi Rover.
+Non è un’app nativa dell’App Store. Il caricamento iniziale richiede Internet.
