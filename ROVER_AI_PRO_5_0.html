@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R.O.V.E.R. AI PRO | Digital Twin</title>
+<style>
+:root{--bg:#06101d;--panel:#0a1d30;--line:#1d4158;--accent:#48f7a4;--muted:#89a8bd;--white:#e8f6ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#12314b 0,#06101d 60%);color:var(--white);font:14px Segoe UI,Arial,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid var(--line);background:#071522b8}
+.logo{font-weight:800;letter-spacing:3px;font-size:21px}.logo b{color:var(--accent)}.sub{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px}
+.pill{border:1px solid #456078;border-radius:30px;padding:8px 12px;color:#9cb6c6;font-size:11px;letter-spacing:1px}
+main{padding:20px;max-width:1580px;margin:auto}.layout{display:grid;grid-template-columns:240px minmax(0,1fr) 300px;gap:16px}
+.panel{background:linear-gradient(145deg,#0b2034e8,#091828f2);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px #0003}
+.panel h2{font-size:11px;color:#87cfe0;letter-spacing:2px;font-weight:700;margin:0;padding:17px;border-bottom:1px solid #1a3c52}
+.metric{padding:16px;border-bottom:1px solid #19384b}.metric .key{font-size:10px;color:var(--muted);letter-spacing:1px}.metric .val{font-size:16px;font-weight:700;margin-top:8px}.dim{color:#8aa6b7}.ok{color:var(--accent)}.warn{color:#ffca79}
+#scene{height:520px;width:100%;display:block;cursor:grab;touch-action:none}#scene:active{cursor:grabbing}
+.sceneWrap{position:relative;background:radial-gradient(ellipse at 50% 45%,#123752 0,#071522 70%)}.sceneTag{position:absolute;top:20px;left:20px;font-size:11px;color:#9bc8d7;letter-spacing:2px;pointer-events:none}
+.sceneHint{position:absolute;bottom:20px;left:20px;color:#7ca2b5;font-size:11px;pointer-events:none}
+.sceneControls{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-top:1px solid var(--line);gap:12px;flex-wrap:wrap}
+button{background:#112e43;color:#d9f3fc;border:1px solid #31566b;border-radius:8px;padding:10px 13px;cursor:pointer;font-weight:650}
+button:hover{border-color:var(--accent)}button.active{border-color:var(--accent);color:var(--accent);background:#123b3a}
+.buttons{display:flex;gap:8px;flex-wrap:wrap}.tiny{font-size:11px;color:var(--muted)}
+.camera{height:166px;display:grid;place-items:center;background:repeating-linear-gradient(0deg,#091a28,#091a28 3px,#0b1e2e 4px);text-align:center;color:#8baabb}
+.camera strong{display:block;color:#c7e5f4;margin-top:12px}.chat{padding:15px;min-height:210px}.chatbox{background:#081727;border:1px solid #254358;border-radius:9px;padding:13px;line-height:1.55;color:#c7dbe8;font-size:12px}
+.chatbox b{color:var(--accent)}.chat input{width:100%;background:#061522;border:1px solid #315267;border-radius:8px;color:white;padding:12px;margin:12px 0 8px}
+.chat button{width:100%}.notice{padding:12px 15px;color:#9ab6c6;font-size:11px;line-height:1.5;border-top:1px solid #24465a}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}.stat{padding:17px}.stat .value{font-size:20px;font-weight:750;margin-top:8px}.stat .key{font-size:10px;letter-spacing:1px;color:#8cacc0}
+footer{font-size:11px;color:#7e9caf;margin:20px 3px}
+@media(max-width:1050px){.layout{grid-template-columns:1fr 1fr}.center{grid-column:1/-1;grid-row:1}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){header{padding:15px}.layout{grid-template-columns:1fr}.center{grid-column:auto}#scene{height:370px}.stats{grid-template-columns:repeat(2,1fr)}.logo{font-size:17px}}
+.voiceConfig{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;padding:12px;background:#071a2a;border:1px solid #29506a;border-radius:10px;align-items:center}.voiceConfig label{font-size:10px;letter-spacing:1px;color:#90c4d9}.voiceConfig select{grid-column:1/-1;background:#092438;color:#e8f6ff;border:1px solid #396780;border-radius:7px;padding:8px;min-width:0}.voiceConfig input{width:100%;accent-color:var(--accent)}.voiceConfig button{grid-column:1/-1}.panel{backdrop-filter:blur(8px)}.sceneWrap:after{content:"";position:absolute;inset:0;border:1px solid #2d687044;pointer-events:none}.stat{background:linear-gradient(125deg,#102d43,#081827)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{box-shadow:0 8px 32px #0005;border:1px solid #1c536a}.logo{letter-spacing:2px}button{transition:background .18s,border-color .18s,transform .18s}button:hover{transform:translateY(-1px)}.camera{border:1px solid #23516a}.sceneWrap{border:1px solid #2b6178}#response{line-height:1.65}header{box-shadow:0 4px 24px #0005}</style><style>
+/* Apertura cinematografica originale Covone Corporation */
+#roverIntro{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#03070d;color:#f0f7ff;overflow:hidden;transition:opacity .85s ease,visibility .85s ease}
+#roverIntro.introOff{opacity:0;visibility:hidden;pointer-events:none}
+#roverIntro::before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 90deg,transparent 0deg,#13465a 85deg,transparent 155deg,#071b2b 270deg,transparent 360deg);filter:blur(85px);opacity:.43;animation:introSpin 5s linear infinite}
+#roverIntro .introContent{position:relative;text-align:center;width:min(92vw,800px);padding:25px;animation:introRise 1.15s both}
+#roverIntro .introLine{width:0;height:2px;margin:0 auto 32px;background:linear-gradient(90deg,transparent,#48f7a4,transparent);box-shadow:0 0 25px #48f7a4;animation:introLine 1.35s .2s ease forwards}
+#roverIntro .introName{font:900 clamp(42px,9vw,94px)/1 Segoe UI,Arial,sans-serif;letter-spacing:.13em;text-shadow:0 0 28px #48f7a444;animation:introGlow 2.8s ease-in-out infinite alternate}
+#roverIntro .introName span{color:#48f7a4}
+#roverIntro .introTag{margin-top:20px;font-size:clamp(11px,2vw,17px);font-weight:700;letter-spacing:.48em;color:#c0d5e0;animation:introRise 1.2s .55s both}
+#roverIntro .introSub{margin-top:33px;font-size:11px;letter-spacing:.34em;color:#7797a9;animation:introRise 1.1s 1s both}
+#roverIntro .introProgress{height:2px;width:min(260px,60vw);margin:30px auto 0;background:#143246;overflow:hidden;border-radius:3px}
+#roverIntro .introProgress::after{content:"";display:block;height:100%;width:0;background:#48f7a4;box-shadow:0 0 12px #48f7a4;animation:introLoad 3.1s linear forwards}
+#roverIntro .introSkip{position:absolute;bottom:26px;right:28px;border:1px solid #416173;background:#091b2c;color:#a9c4d4;font-size:12px;padding:8px 12px}
+@keyframes introRise{from{opacity:0;transform:translateY(28px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes introLine{to{width:min(470px,70vw)}}
+@keyframes introSpin{to{transform:rotate(360deg)}}
+@keyframes introGlow{from{text-shadow:0 0 12px #48f7a422}to{text-shadow:0 0 45px #48f7a466}}
+@keyframes introLoad{to{width:100%}}
+@media(prefers-reduced-motion:reduce){#roverIntro *,#roverIntro::before{animation:none!important}#roverIntro .introLine{width:70%}#roverIntro .introProgress::after{width:100%}}
+</style></head><body><div id="roverIntro" role="status" aria-label="Avvio di R.O.V.E.R. AI PRO, Covone Corporation">
+<div class="introContent"><div class="introLine"></div><div class="introName">R.O.V.E.R. <span>AI PRO</span></div><div class="introTag">COVONE CORPORATION</div><div class="introSub">INTELLIGENCE · ROBOTICS · INNOVATION</div><div class="introProgress"></div></div>
+<button class="introSkip" type="button" id="skipIntro">SALTA INTRO</button></div>
+<script>
+(function(){
+ const splash=document.getElementById('roverIntro');
+ let finished=false;
+ function closeIntro(){if(finished)return;finished=true;splash.classList.add('introOff');setTimeout(()=>splash.remove(),1000)}
+ document.getElementById('skipIntro').addEventListener('click',closeIntro);
+ setTimeout(closeIntro,3500);
+})();
+</script>
+<header><div><div class="logo">R.O.V.E.R. <b>AI PRO</b></div><div class="sub">DIGITAL TWIN · CONTROL CENTER 5.0</div></div><span class="pill">● AI LOCALE · HARDWARE NON COLLEGATO</span></header>
+<main><div class="layout">
+<section class="panel"><h2>STATO SISTEMA</h2>
+<div class="metric"><div class="key">UNITÀ ROBOTICA</div><div class="val warn">NON COLLEGATA</div></div>
+<div class="metric"><div class="key">CONTROLLO MOVIMENTO</div><div class="val dim">ESP32 · In attesa</div></div>
+<div class="metric"><div class="key">BATTERIA</div><div class="val dim">— % <span class="tiny">nessun dato</span></div></div>
+<div class="metric"><div class="key">MOTORI E CINGOLI</div><div class="val dim">Non collegati</div></div>
+<div class="metric"><div class="key">SENSORI OSTACOLI</div><div class="val dim">Non collegati</div></div>
+<div class="metric"><div class="key">YOLO / VISIONE AI</div><div class="val dim">Non attivo</div></div>
+<div class="metric"><div class="key">MODELLO VISUALIZZATO</div><div class="val ok">3D INTERATTIVO</div></div>
+</section>
+<section class="panel center"><h2>ROBOT DIGITAL TWIN · R.O.V.E.R. / TRACKED PLATFORM</h2>
+<div class="sceneWrap"><div class="sceneTag">3D MODEL VIEWER <span id="viewlabel" style="color:var(--accent)">● ONLINE</span></div><canvas id="scene"></canvas><div class="sceneHint">Trascina per ruotare · Rotellina per zoom · Modello dimostrativo 40 × 30 cm</div></div>
+<div class="sceneControls"><div class="buttons"><button id="green" class="active">◉ VERDE</button><button id="cyan">◉ AZZURRO</button><button id="auto">⟳ AUTO-ROTAZIONE</button><button id="reset">↺ RESET VISTA</button></div><span class="tiny">MODELLO 3D / NON TELEMETRIA REALE</span></div>
+</section>
+<section class="panel"><h2>VISIONE & ASSISTENTE</h2><div class="camera" id="cameraPanel" style="position:relative;overflow:hidden">
+<video id="webcam" autoplay muted playsinline style="display:none;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)"></video><canvas id="detections" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none;transform:scaleX(-1)"></canvas>
+<div id="cameraPlaceholder"><span style="font-size:32px">▣</span><strong id="cameraTitle">WEBCAM NON COLLEGATA</strong><div class="tiny" id="cameraDetail" style="margin-top:6px">Premi Avvia webcam per usare la fotocamera del PC</div></div>
+</div>
+<div style="display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)">
+<button id="startCamera" style="flex:1">▶ AVVIA WEBCAM</button>
+<button id="stopCamera" style="flex:1" disabled>■ FERMA</button></div>
+<div style="display:flex;gap:8px;padding:0 12px 12px;align-items:center"><button id="toggleYolo" disabled>◎ ATTIVA YOLO</button><span id="yoloInfo" class="tiny">YOLO non attivo</span></div><div id="cameraStatus" role="status" style="padding:0 12px 12px;color:#a4bfce;font-size:11px">Stato: in attesa di autorizzazione</div>
+<h2>ASSISTENTE R.O.V.E.R. · GEMMA 3 / VOICE STUDIO</h2><div class="chat">
+<div class="chatbox" id="response" style="max-height:240px;overflow-y:auto;white-space:pre-wrap"><b>R.O.V.E.R.:</b> Pronto. Di’ «Ehi Rover» per parlare, oppure scrivi una domanda.</div>
+<div id="voiceStatus" class="tiny" style="margin-top:9px" role="status">Microfono Python: inizializzazione...</div>
+<input id="question" placeholder="Chiedimi qualcosa..." aria-label="Messaggio">
+<div class="buttons" style="margin-bottom:9px"><button id="listen" style="flex:1">🎙 ASCOLTA (MANUALE)</button><button id="send" style="flex:1">➤ INVIA</button></div>
+<div class="buttons"><button id="see" style="flex:1">◉ COSA VEDI?</button><button id="mute" style="flex:1">🔊 VOCE ATTIVA</button></div>
+<div class="voiceConfig"><strong>VOCE FEMMINILE: ISABELLA NEURAL</strong><span class="tiny">Richiede Internet · nessuna voce maschile sostitutiva</span><button id="testVoice" type="button">▶ PROVA VOCE</button></div>
+<div id="aiStatus" class="tiny" style="margin-top:10px">Gemma 3: verifica in corso...</div></div>
+<div class="notice">Il microfono Python Vosk rimane in ascolto per «Ehi Rover» finché il programma è aperto. Dopo il richiamo, pronuncia una domanda. Il pulsante ASCOLTA (MANUALE) è un’alternativa opzionale tramite Edge.</div>
+</section></div>
+<div class="stats"><div class="panel stat"><div class="key">DIMENSIONI TELAIO</div><div class="value">40 × 30 <small style="font-size:12px">cm</small></div></div><div class="panel stat"><div class="key">TIPO LOCOMOZIONE</div><div class="value">CINGOLI</div></div><div class="panel stat"><div class="key">CONTROLLO</div><div class="value">ESP32 <small style="font-size:12px">previsto</small></div></div><div class="panel stat"><div class="key">RENDER 3D</div><div class="value ok" id="fps">ATTIVO</div></div></div>
+<footer>R.O.V.E.R. AI PRO · Prototipo d'interfaccia locale · Nessun dato hardware simulato viene presentato come misura reale.</footer>
+</main>
+<script>
+const canvas=document.getElementById('scene'),ctx=canvas.getContext('2d');
+let accent='#48f7a4',yaw=-0.55,pitch=0.31,zoom=1,drag=false,prev=null,autorotate=false,last=0;
+function resize(){let d=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect();canvas.width=Math.round(r.width*d);canvas.height=Math.round(r.height*d);ctx.setTransform(d,0,0,d,0,0)}
+window.addEventListener('resize',resize);resize();
+function point(x,y,z){let cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);let a=x*cy-z*sy,b=x*sy+z*cy;let yy=y*cp-b*sp,zz=y*sp+b*cp;let s=Math.min(canvas.clientWidth/7.8,canvas.clientHeight/5.5)*zoom;return [canvas.clientWidth/2+a*s,canvas.clientHeight*.54-yy*s,zz]}
+function line(a,b,color=accent,width=1,alpha=.8){let A=point(...a),B=point(...b);ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(A[0],A[1]);ctx.lineTo(B[0],B[1]);ctx.stroke();ctx.globalAlpha=1}
+function box(x1,y1,z1,x2,y2,z2,fill,edge=accent){let v=[[x1,y1,z1],[x2,y1,z1],[x2,y2,z1],[x1,y2,z1],[x1,y1,z2],[x2,y1,z2],[x2,y2,z2],[x1,y2,z2]];
+let faces=[[0,1,2,3],[4,5,6,7],[0,1,5,4],[3,2,6,7],[0,3,7,4],[1,2,6,5]];
+let f=faces.map(ids=>({ids,z:ids.reduce((a,i)=>a+point(...v[i])[2],0)/4})).sort((a,b)=>b.z-a.z);
+for(let face of f){ctx.beginPath();face.ids.forEach((i,k)=>{let p=point(...v[i]);k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])});ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=edge;ctx.globalAlpha=.6;ctx.lineWidth=1;ctx.stroke();ctx.globalAlpha=1}}
+function ring(cx,cy,cz,r,color=accent,steps=28){for(let i=0;i<steps;i++){let a=i*Math.PI*2/steps,b=(i+1)*Math.PI*2/steps;line([cx,cy+Math.cos(a)*r,cz+Math.sin(a)*r],[cx,cy+Math.cos(b)*r,cz+Math.sin(b)*r],color,1.4,.8)}}
+function render(t){let dt=Math.min((t-last)/1000,.05);last=t;if(autorotate)yaw+=dt*.35;ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);
+let w=canvas.clientWidth,h=canvas.clientHeight;let grad=ctx.createRadialGradient(w*.5,h*.55,5,w*.5,h*.55,w*.55);grad.addColorStop(0,'#15405b');grad.addColorStop(1,'#071522');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
+for(let i=-6;i<=6;i++){line([i*.5,-.92,-3],[i*.5,-.92,3],'#24536a',.65,.42);line([-3,-.92,i*.5],[3,-.92,i*.5],'#24536a',.65,.42)}
+// body and two long caterpillar tracks
+box(-1.18,-.12,-.72,1.18,.44,.72,'#123b4c');
+for(let z of [-.91,.91]){box(-1.32,-.55,z-.25,1.32,.19,z+.25,'#0b2632');for(let x=-1.18;x<=1.19;x+=.19){line([x,-.54,z-.26],[x,.17,z-.26],accent,1.2,.52);line([x,-.54,z+.26],[x,.17,z+.26],accent,1.2,.52)}for(let x of [-.98,0,.98])ring(x,-.23,z+.27,.18)}
+box(-.98,.44,-.60,.98,.54,.60,'#0b3241');for(let x=-.8;x<=.81;x+=.22){line([x,.55,-.56],[x,.55,.56],accent,.9,.4)}
+box(-.35,.54,-.30,.35,.68,.30,'#143d4a');box(-.12,.68,-.12,.12,1.15,.12,'#0c303e');box(-.33,1.08,-.24,.33,1.40,.24,'#124c56');
+box(-.19,1.18,-.26,.19,1.35,-.28,'#051c28');ring(0,1.27,-.30,.12,'#75e7ff',24);
+for(let z of [-.48,.48]){line([-.95,.55,z],[.95,.55,z],accent,1.1,.7)}
+ctx.fillStyle=accent;ctx.globalAlpha=.6;for(let i=0;i<24;i++){let a=i*Math.PI/12,px=point(1.8*Math.cos(a),-.90,1.8*Math.sin(a));ctx.fillRect(px[0],px[1],2,2)}ctx.globalAlpha=1;
+requestAnimationFrame(render)}requestAnimationFrame(render);
+canvas.addEventListener('pointerdown',e=>{drag=true;prev=[e.clientX,e.clientY];canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointerup',()=>drag=false);canvas.addEventListener('pointercancel',()=>drag=false);
+canvas.addEventListener('pointermove',e=>{if(!drag)return;yaw+=(e.clientX-prev[0])*.009;pitch=Math.max(-.7,Math.min(.85,pitch+(e.clientY-prev[1])*.007));prev=[e.clientX,e.clientY]});
+canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.55,Math.min(2.2,zoom*(e.deltaY>0?.91:1.09)))},{passive:false});
+function color(c){accent=c;document.documentElement.style.setProperty('--accent',c);document.getElementById('green').classList.toggle('active',c==='#48f7a4');document.getElementById('cyan').classList.toggle('active',c!=='#48f7a4')}
+document.getElementById('green').onclick=()=>color('#48f7a4');document.getElementById('cyan').onclick=()=>color('#48d8ff');
+document.getElementById('auto').onclick=e=>{autorotate=!autorotate;e.target.classList.toggle('active',autorotate)};
+document.getElementById('reset').onclick=()=>{yaw=-.55;pitch=.31;zoom=1;autorotate=false;document.getElementById('auto').classList.remove('active')};
+
+document.getElementById('question').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('send').click()});
+
+// Camera del PC: il browser acquisisce il video direttamente, senza Python né YOLO.
+let cameraStream=null;
+const webcam=document.getElementById('webcam'),camStatus=document.getElementById('cameraStatus');
+const camStart=document.getElementById('startCamera'),camStop=document.getElementById('stopCamera');
+function cameraMessage(message){camStatus.textContent='Stato: '+message}
+function stopCamera(){
+ stopYolo();
+ if(cameraStream){cameraStream.getTracks().forEach(track=>track.stop());cameraStream=null}
+ webcam.pause();webcam.srcObject=null;webcam.style.display='none';
+ document.getElementById('cameraPlaceholder').style.display='block';
+ document.getElementById('cameraTitle').textContent='WEBCAM NON COLLEGATA';
+ document.getElementById('cameraDetail').textContent='Premi Avvia webcam per riprovare';
+ camStart.disabled=false;camStop.disabled=true;document.getElementById("toggleYolo").disabled=true;
+ cameraMessage('telecamera spenta');
+}
+camStart.addEventListener('click',async()=>{
+ camStart.disabled=true;cameraMessage('richiesta di accesso alla webcam...');
+ try{
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+   throw new Error('Accesso webcam non disponibile. Prova ad aprire la pagina da localhost.');
+  cameraStream=await navigator.mediaDevices.getUserMedia({audio:false,video:{width:{ideal:640},height:{ideal:480},frameRate:{ideal:30,max:30},facingMode:'user'}});
+  webcam.srcObject=cameraStream;
+  await webcam.play();
+  webcam.style.display='block';
+  document.getElementById('cameraPlaceholder').style.display='none';
+  camStop.disabled=false;document.getElementById("toggleYolo").disabled=false;cameraMessage('webcam attiva · video locale, nessun invio a server');
+  cameraStream.getVideoTracks().forEach(track=>track.addEventListener('ended',()=>{if(cameraStream)stopCamera()}));
+ }catch(e){
+  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}
+  camStart.disabled=false;camStop.disabled=true;
+  const msg=e.name==='NotAllowedError'?'permesso negato: consenti la fotocamera in Edge':
+   e.name==='NotFoundError'?'nessuna webcam rilevata':
+   e.name==='NotReadableError'?'webcam occupata da un altro programma':
+   e.message;
+  cameraMessage('errore · '+msg);
+  document.getElementById('cameraDetail').textContent=msg;
+ }
+});
+camStop.addEventListener('click',stopCamera);
+window.addEventListener('pagehide',()=>{if(cameraStream)cameraStream.getTracks().forEach(t=>t.stop())});
+
+// YOLO funziona in un processo Python locale. Il video rimane nel browser.
+const yoloBtn=document.getElementById('toggleYolo'), yoloInfo=document.getElementById('yoloInfo');
+const overlay=document.getElementById('detections'), octx=overlay.getContext('2d');
+const shot=document.createElement('canvas'),shotCtx=shot.getContext('2d');
+let yoloOn=false, yoloBusy=false, yoloTimer=null,requestController=null;
+function stopYolo(){
+ yoloOn=false;clearTimeout(yoloTimer);yoloTimer=null;
+ if(requestController){requestController.abort();requestController=null}
+ yoloBtn.textContent='◎ ATTIVA YOLO';yoloBtn.classList.remove('active');
+ yoloInfo.textContent='YOLO non attivo';overlay.style.display='none';octx.clearRect(0,0,overlay.width,overlay.height);
+}
+function drawBoxes(items,w,h){
+ const rect=webcam.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);
+ overlay.width=Math.max(1,Math.round(rect.width*d));overlay.height=Math.max(1,Math.round(rect.height*d));
+ octx.setTransform(d,0,0,d,0,0);octx.clearRect(0,0,rect.width,rect.height);
+ const vw=webcam.videoWidth||w,vh=webcam.videoHeight||h;
+ const scale=Math.max(rect.width/vw,rect.height/vh),ox=(rect.width-vw*scale)/2,oy=(rect.height-vh*scale)/2;
+ octx.font='bold 12px Segoe UI, sans-serif';octx.lineWidth=2;
+ for(const item of items){
+  const [x1,y1,x2,y2]=item.box;let x=x1*vw*scale+ox,y=y1*vh*scale+oy,bw=(x2-x1)*vw*scale,bh=(y2-y1)*vh*scale;
+  octx.strokeStyle=accent;octx.strokeRect(x,y,bw,bh);
+  const label=`${item.label} ${Math.round(item.confidence*100)}%`,lw=octx.measureText(label).width+12;
+  octx.fillStyle=accent;octx.fillRect(x,Math.max(0,y-21),lw,21);
+  octx.fillStyle='#051421';octx.fillText(label,x+6,Math.max(14,y-6));
+ }
+}
+async function detectLoop(){
+ if(!yoloOn||!cameraStream)return;
+ if(yoloBusy){yoloTimer=setTimeout(detectLoop,200);return}
+ yoloBusy=true;
+ try{
+  if(webcam.readyState<2)throw new Error('La webcam non è pronta');
+  const vw=webcam.videoWidth,vh=webcam.videoHeight;
+  const scale=Math.min(1,480/vw);shot.width=Math.round(vw*scale);shot.height=Math.round(vh*scale);
+  shotCtx.drawImage(webcam,0,0,shot.width,shot.height);
+  const blob=await new Promise(resolve=>shot.toBlob(resolve,'image/jpeg',.68));
+  if(!blob)throw new Error('Impossibile creare il fotogramma');
+  requestController=new AbortController();
+  const timeout=setTimeout(()=>requestController?.abort(),12000);
+  let res;
+  try{res=await fetch('/detect',{method:'POST',headers:{'Content-Type':'image/jpeg'},body:blob,signal:requestController.signal})}
+  finally{clearTimeout(timeout);requestController=null}
+  const data=await res.json();if(!res.ok)throw new Error(data.error||'Errore server');
+  if(yoloOn){drawBoxes(data.objects,shot.width,shot.height);yoloInfo.textContent=`${data.objects.length} oggetti · ${data.inference_ms} ms`;}
+ }catch(err){if(yoloOn)yoloInfo.textContent='YOLO: '+(err.name==='AbortError'?'tempo scaduto':err.message)}
+ finally{yoloBusy=false;if(yoloOn)yoloTimer=setTimeout(detectLoop,900)}
+}
+yoloBtn.addEventListener('click',()=>{
+ if(yoloOn){stopYolo();return}
+ if(!cameraStream){yoloInfo.textContent='Prima avvia la webcam';return}
+ yoloOn=true;yoloBtn.textContent='■ DISATTIVA YOLO';yoloBtn.classList.add('active');
+ overlay.style.display='block';yoloInfo.textContent='Avvio riconoscimento...';detectLoop();
+});
+
+// Conversazione locale: il browser usa il server Python per chiamare Ollama.
+const chatOutput=document.getElementById('response'), aiStatus=document.getElementById('aiStatus');
+let busy=false, voiceEnabled=true, recognizing=false, recognizer=null;
+let history=[];
+function showReply(prefix,msg){chatOutput.textContent=prefix+msg;chatOutput.scrollTop=chatOutput.scrollHeight}
+async function speakItalian(message){
+ if(!voiceEnabled)return;
+ try{
+  const r=await fetch('/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:message})});
+  if(!r.ok)throw Error('Isabella Neural non disponibile');
+  const blob=await r.blob();
+  if(window.roverAudio){window.roverAudio.pause();URL.revokeObjectURL(window.roverAudio.src)}
+  window.roverAudio=new Audio(URL.createObjectURL(blob));await window.roverAudio.play();
+ }catch(err){aiStatus.textContent='Voce femminile Isabella Neural non disponibile: controlla Internet e edge-tts';console.warn(err)}
+}
+function snapshot(){if(!cameraStream||!webcam.videoWidth)return null;
+ let c=document.createElement('canvas');c.width=512;c.height=Math.round(512*webcam.videoHeight/webcam.videoWidth);
+ c.getContext('2d').drawImage(webcam,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.65).split(',')[1]}
+async function askAI(q,withImage=false){if(busy)return;if(!q.trim())return;
+ busy=true;document.getElementById('send').disabled=true;document.getElementById('see').disabled=true;
+ showReply('TU: ',q+'\n\nR.O.V.E.R.: elaborazione...');aiStatus.textContent='Gemma 3: sto elaborando...';
+ try{let image=withImage?snapshot():null;if(withImage&&!image)throw Error('Avvia prima la webcam');
+ const response=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,image,history})});
+ const data=await response.json();if(!response.ok)throw Error(data.error||'Errore del server');
+ const answer=data.reply||'Non ho ricevuto una risposta';showReply('TU: ',q+'\n\nR.O.V.E.R.: '+answer);
+ history.push({role:'user',content:q},{role:'assistant',content:answer});history=history.slice(-8);
+ aiStatus.textContent='Gemma 3: risposta ricevuta · '+(data.model||'');speakItalian(answer);
+ }catch(e){showReply('ERRORE: ',e.message);aiStatus.textContent='Gemma 3: verifica Ollama e modello installato'}
+ finally{busy=false;document.getElementById('send').disabled=false;document.getElementById('see').disabled=false}}
+document.getElementById('send').onclick=()=>askAI(document.getElementById('question').value);
+document.getElementById('see').onclick=()=>askAI('Descrivi in italiano cosa vedi nella webcam, senza inventare dettagli.',true);
+document.getElementById('mute').onclick=e=>{voiceEnabled=!voiceEnabled;e.target.textContent=voiceEnabled?'🔊 VOCE ATTIVA':'🔇 VOCE SPENTA';if(!voiceEnabled&&'speechSynthesis' in window)speechSynthesis.cancel()};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const voiceStatus=document.getElementById('voiceStatus');
+if(SR){recognizer=new SR();recognizer.lang='it-IT';recognizer.continuous=false;recognizer.interimResults=true;
+ recognizer.onresult=e=>{let transcript=Array.from(e.results).map(r=>r[0].transcript).join(' ').trim();
+ document.getElementById('question').value=transcript;voiceStatus.textContent='Ho sentito: '+transcript;
+ if(e.results[e.results.length-1].isFinal){let q=transcript.replace(/^\s*(ehi|hey)\s+rover[,:.!]?\s*/i,'').trim();if(q)askAI(q)}};
+ recognizer.onerror=e=>{voiceStatus.textContent='Microfono: '+e.error+' · controlla permessi Edge';recognizing=false};
+ recognizer.onend=()=>{recognizing=false;document.getElementById('listen').textContent='🎙 ASCOLTA (MANUALE)'};
+ document.getElementById('listen').onclick=()=>{if(recognizing){recognizer.stop();return}try{recognizer.start();recognizing=true;voiceStatus.textContent='Sto ascoltando...';document.getElementById('listen').textContent='■ FERMA ASCOLTO'}catch(e){voiceStatus.textContent=e.message}};
+}else{document.getElementById('listen').disabled=true}
+document.getElementById('testVoice').addEventListener('click',()=>speakItalian('Ciao, sono Rover. Questa è la mia nuova voce italiana.'));
+async function checkAI(){try{let r=await fetch('/health');let d=await r.json();aiStatus.textContent=d.ollama?'Gemma 3: Ollama disponibile':'Gemma 3: Ollama non raggiungibile · avvialo'}catch(e){aiStatus.textContent='Server Python non raggiungibile'}}checkAI();
+</script>
+<script>
+// Ponte con il riconoscimento vocale Vosk eseguito in Python (non usa Web Speech).
+let wakeSequence=0;
+async function pollWake(){
+ try{
+  const response=await fetch('/voice/events?after='+wakeSequence,{cache:'no-store'});
+  if(!response.ok)return;
+  const data=await response.json();
+  const status=document.getElementById('voiceStatus');
+  if(data.status)status.textContent='Microfono Python: '+data.status;
+  for(const ev of data.events||[]){
+   wakeSequence=Math.max(wakeSequence,ev.id);
+   if(ev.type==='wake'){
+    status.textContent='✓ Ehi Rover riconosciuto · attivazione webcam e YOLO...';
+    try{
+      if(!cameraStream)camStart.click();
+      const deadline=Date.now()+12000;
+      while(!cameraStream && Date.now()<deadline)await new Promise(r=>setTimeout(r,200));
+      if(cameraStream&&!yoloOn)yoloBtn.click();
+      status.textContent=cameraStream&&yoloOn?'✓ R.O.V.E.R. attivo: webcam e YOLO':'Attivazione parziale: verifica permessi webcam / YOLO';
+    }catch(err){status.textContent='Errore avvio visione: '+err.message}
+   }else if(ev.type==='command'){
+     const question=String(ev.text||'').trim();
+     if(question){
+       document.getElementById('question').value=question;
+       status.textContent='✓ Domanda vocale: '+question;
+       if(/^(presentati|presenta ti)$/.test(question)){
+         askAI('presentati');
+       }else if(/^(cosa vedi|che cosa vedi|descrivi cosa vedi)/.test(question)){
+         askAI('Descrivi in italiano cosa vedi nella webcam, senza inventare dettagli.',true);
+       }else{askAI(question)}
+     }
+   }else if(ev.type==='presentati'){
+     const reply='Sono R.O.V.E.R. AI PRO, un progetto di robotica e intelligenza artificiale ideato e sviluppato da Giuseppe Covone, studente della quinta E Automazione, per l’Esame di Stato. Utilizzo YOLO per riconoscere gli oggetti e Gemma 3, un modello linguistico sviluppato da Google.';
+     showReply('R.O.V.E.R.: ',reply);speakItalian(reply);
+   }
+  }
+ }catch(e){}
+}
+setInterval(pollWake,650);pollWake();
+</script>
+</body></html>
